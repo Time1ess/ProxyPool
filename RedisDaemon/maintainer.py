@@ -3,7 +3,7 @@
 # Author: David
 # Email: youchen.du@gmail.com
 # Created: 2017-04-19 16:58
-# Last modified: 2017-04-22 19:20
+# Last modified: 2017-04-25 16:57
 # Filename: maintainer.py
 # Description:
 import time
@@ -44,11 +44,10 @@ def maintain(conn):
                     future.add_done_callback(callback)
             rookies_num = conn.zcard('rookies_checking')
             availables_num = conn.scard('available_proxies')
-            # sys.stdout.flush()
-            # sys.stdout.write(
-            #     'Rookies: {:5d}, Availables: {:5d}, Futures: {:5d}\r'.format(
-            #     rookies_num, availables_num, len(futures)))
-            time.sleep(0.1)
+            sys.stdout.flush()
+            sys.stdout.write(
+                'Rookies: {:5d}, Availables: {:5d}, Futures: {:5d}\r'.format(
+                rookies_num, availables_num, len(futures)))
     print('Maintain finished.')
 
 

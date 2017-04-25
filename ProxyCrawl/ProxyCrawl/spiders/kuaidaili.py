@@ -3,7 +3,7 @@
 # Author: David
 # Email: youchen.du@gmail.com
 # Created: 2017-04-19 19:46
-# Last modified: 2017-04-19 21:33
+# Last modified: 2017-04-25 17:03
 # Filename: kuaidaili.py
 # Description:
 import scrapy
@@ -21,8 +21,6 @@ class KuaidailiSpider(BaseSpider):
     url_fmt = 'http://www.kuaidaili.com/free/intr/{}'
 
     def parse(self, response):
-        self.current_pages -= 1
-        self.new_requests()
         if response.status != 200:
             return None
         ip_list = response.xpath('//div[@id="list"]/table//tr')[1:]

@@ -3,7 +3,7 @@
 # Author: David
 # Email: youchen.du@gmail.com
 # Created: 2017-04-19 14:16
-# Last modified: 2017-04-19 21:33
+# Last modified: 2017-04-25 17:03
 # Filename: xici.py
 # Description:
 import scrapy
@@ -21,8 +21,6 @@ class XiciSpider(BaseSpider):
     url_fmt = 'http://www.xicidaili.com/nt/{}'
 
     def parse(self, response):
-        self.current_pages -= 1
-        self.new_requests()
         if response.status != 200:
             return None
         ip_list = response.xpath('//table[@id="ip_list"]//tr')[1:]

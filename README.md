@@ -1,6 +1,7 @@
 # ProxyPool
 
 ---
+[阅读中文版本(Read in Chinese)](README_CN.md)
 
 An Python implementation of proxy pool.
 
@@ -39,7 +40,7 @@ I have not tested other versions of above packages, but I think it works fine fo
 To start the tool, simply:
 > $ ./start.sh
 
-It will start *Pool Maintainer* and default *Proxy Crawler*.
+It will start *Pool Maintainer* and *Proxy Crawler*.
 
 To stop the tool, simply:
 > $ sudo ./stop.sh
@@ -62,9 +63,7 @@ To add support for crawling more sites for proxies:
 	* `url_fmt` will be used to generate crawling pages, it's often that the coding rule of these free proxy providing website is something like `xxx.com/yy/5`
 	* `parse` method should take care of the content of response and parse it to create new `ProxyItem` which has been defined in `items.py`
 
-5. Update `start.sh` to add a hangup for new spider.
-
-6. It's done, the tool will handle the rest, just start the tool.
+5. It's done, the tool will handle the rest, just start the tool.
 
 ## Data in Redis
 

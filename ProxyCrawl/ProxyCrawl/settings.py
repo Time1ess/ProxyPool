@@ -3,7 +3,7 @@
 # Author: David
 # Email: youchen.du@gmail.com
 # Created: 2017-04-19 14:00
-# Last modified: 2017-04-19 21:25
+# Last modified: 2017-04-25 16:46
 # Filename: settings.py
 # Description:
 # -*- coding: utf-8 -*-
@@ -21,6 +21,7 @@ BOT_NAME = 'ProxyCrawl'
 
 SPIDER_MODULES = ['ProxyCrawl.spiders']
 NEWSPIDER_MODULE = 'ProxyCrawl.spiders'
+COMMANDS_MODULE = 'ProxyCrawl.commands'
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
@@ -97,3 +98,4 @@ ITEM_PIPELINES = {
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+
