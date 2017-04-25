@@ -3,7 +3,7 @@
 # Author: David
 # Email: youchen.du@gmail.com
 # Created: 2017-04-19 18:43
-# Last modified: 2017-04-22 19:40
+# Last modified: 2017-04-25 21:51
 # Filename: utils.py
 # Description:
 import time 
@@ -36,7 +36,6 @@ def rookie_callback(conn, futures):
             conn.sadd('available_proxies', '{}://{}'.format(protocol, proxy))
             conn.srem('rookie_proxies', proxy)
             conn.zadd('availables_checking', proxy, time.time())
-            print('New Available Proxy: {:50s}'.format(proxy))
         else:
             if conn.hincrby(key, 'failed_times', 1) < 3:
                 # If not reach the maximum of failed_times
@@ -45,7 +44,6 @@ def rookie_callback(conn, futures):
             else:
                 conn.srem('rookie_proxies', proxy)
                 conn.delete(key)
-                print('Bad Proxy: {:50s}'.format(proxy))
         futures.remove(future)
     return _wrapper
 
@@ -61,7 +59,6 @@ def available_callback(conn, futures):
         if succeed:
             conn.hset(key, 'failed_times', 0)
             conn.zadd('availables_checking', proxy, time.time() + 30)
-            print('Alive Proxy: {:50s}'.format(proxy))
         else:
             if conn.hincrby(key, 'failed_times', 1) < 3:
                 conn.zadd('rookies_checking', proxy, time.time())
@@ -69,6 +66,5 @@ def available_callback(conn, futures):
                 conn.srem('available_proxies', '{}://{}'.format(protocol,
                                                                 proxy))
                 conn.delete(key)
-                print('Proxy dead: {:50s}'.format(proxy))
         futures.remove(future)
     return _wrapper

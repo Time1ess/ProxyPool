@@ -59,9 +59,16 @@ To add support for crawling more sites for proxies:
 
 3. Open the new spider file and change its inheirtance to `base_spider.BaseSpider`(if structure of the site you choose to crawl is not like the defaults, you can write your own logic)
 
-4. Overwrite attribute `url_fmt` and method `parse` to fit with predefined logic.
+4. Overwrite attributes to fit with predefined logic.
 	* `url_fmt` will be used to generate crawling pages, it's often that the coding rule of these free proxy providing website is something like `xxx.com/yy/5`
-	* `parse` method should take care of the content of response and parse it to create new `ProxyItem` which has been defined in `items.py`
+	* `row_xpath` will be used to extract a data row from page content.
+	* `host_xpath` will be used to extract proxy ip from a data row extracted earlier.
+	* `port_xpath` will be used to extract proxy port.
+	* `addr_xpath` will be used to extract proxy address.
+	* `mode_xpath` will be used to extract proxy mode.
+	* `proto_xpath` will be used to extract proxy protocol.
+	* `vt_xpath` will be used to extract proxy validation time.
+	* Above `xpath`s can be set to `null` to get a default `unknown` value.
 
 5. It's done, the tool will handle the rest, just start the tool.
 

@@ -3,7 +3,7 @@
 # Author: David
 # Email: youchen.du@gmail.com
 # Created: 2017-04-25 16:25
-# Last modified: 2017-04-25 17:04
+# Last modified: 2017-04-25 21:39
 # Filename: crawlall.py
 # Description:
 import scrapy

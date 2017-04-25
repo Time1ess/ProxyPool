@@ -3,11 +3,11 @@
 # Author: David
 # Email: youchen.du@gmail.com
 # Created: 2017-04-19 15:33
-# Last modified: 2017-04-19 19:53
+# Last modified: 2017-04-25 21:43
 # Filename: loaders.py
 # Description:
 from scrapy.loader import ItemLoader
-from scrapy.loader.processors import TakeFirst, MapCompose, Join, Compose
+from scrapy.loader.processors import TakeFirst, Join, Compose
 
 
 def clean_addr(addr):
@@ -16,13 +16,25 @@ def clean_addr(addr):
 
 def normalize_addr(addr):
     if not addr:
-        return '未知'
+        return 'Unknown'
     return addr
 
 
+def normalize(v):
+    v.append('Unknown')
+    return v
+
+
+def normalize_proto(v):
+    if not v:
+        return ['http']
+    else:
+        return v
+
+
 class ProxyItemLoader(ItemLoader):
-    default_output_processor = TakeFirst()
+    default_output_processor = Compose(normalize, TakeFirst())
 
     proxy_out = Join(':')
     addr_out = Compose(Join(), clean_addr, normalize_addr)
-    protocol_out = Compose(Join(), str.lower)
+    protocol_out = Compose(normalize_proto, TakeFirst(), str.lower)

@@ -3,7 +3,7 @@
 # Author: David
 # Email: youchen.du@gmail.com
 # Created: 2017-04-19 15:12
-# Last modified: 2017-04-19 16:35
+# Last modified: 2017-04-25 21:39
 # Filename: items.py
 # Description:
 # -*- coding: utf-8 -*-
@@ -16,12 +16,6 @@
 import scrapy
 
 from scrapy.loader.processors import Join, MapCompose, TakeFirst
-
-
-class ProxycrawlItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
 
 
 class ProxyItem(scrapy.Item):

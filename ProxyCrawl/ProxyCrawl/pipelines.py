@@ -3,7 +3,7 @@
 # Author: David
 # Email: youchen.du@gmail.com
 # Created: 2017-04-19 15:51
-# Last modified: 2017-04-19 19:57
+# Last modified: 2017-04-25 21:36
 # Filename: pipelines.py
 # Description:
 # Define your item pipelines here
@@ -30,19 +30,27 @@ class ProxyItemPipeline:
     def process_item(self, item, spider):
         if not isinstance(item, ProxyItem):
             return item
+        if not item.get('ip', None) or not item.get('port', None):
+            raise DropItem('Bad ProxyItem')
+        item.setdefault('addr', 'Unknown')
+        item.setdefault('mode', 'Unknown')
+        item.setdefault('protocol', 'http')
+        item.setdefault('validation_time', 'Unknown')
+        pipe = self.conn.pipeline(False)
         if self.conn.sismember('rookie_proxies', item['proxy']) or\
                 self.conn.sismember('available_proxies', item['proxy']):
             raise DropItem('Already in the waiting list')
-        self.conn.sadd('rookie_proxies', item['proxy'])
-        self.conn.zadd('rookies_checking', item['proxy'], time.time())
         key = 'proxy_info:'+item['proxy']
-        self.conn.hset(key, 'proxy', item['proxy'])
-        self.conn.hset(key, 'ip', item['ip'])
-        self.conn.hset(key, 'port', item['port'])
-        self.conn.hset(key, 'addr', item['addr'])
-        self.conn.hset(key, 'mode', item['mode'])
-        self.conn.hset(key, 'protocol', item['protocol'])
-        self.conn.hset(key, 'validation_time', item['validation_time'])
-        self.conn.hset(key, 'failed_times', 0)
-        self.conn.hset(key, 'latency', 1000)
+        pipe.sadd('rookie_proxies', item['proxy'])
+        pipe.zadd('rookies_checking', item['proxy'], time.time())
+        pipe.hset(key, 'proxy', item['proxy'])
+        pipe.hset(key, 'ip', item['ip'])
+        pipe.hset(key, 'port', item['port'])
+        pipe.hset(key, 'addr', item['addr'])
+        pipe.hset(key, 'mode', item['mode'])
+        pipe.hset(key, 'protocol', item['protocol'])
+        pipe.hset(key, 'validation_time', item['validation_time'])
+        pipe.hset(key, 'failed_times', 0)
+        pipe.hset(key, 'latency', 1000)
+        pipe.execute()
         return item
