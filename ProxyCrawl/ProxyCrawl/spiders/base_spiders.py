@@ -3,7 +3,7 @@
 # Author: David
 # Email: youchen.du@gmail.com
 # Created: 2017-04-19 20:23
-# Last modified: 2017-04-25 21:08
+# Last modified: 2017-04-26 10:29
 # Filename: base_spiders.py
 # Description:
 import scrapy
@@ -23,7 +23,7 @@ class BaseSpider(scrapy.Spider):
     mode_xpath = None
     proto_xpath = None
     vt_xpath = None  # validation_time
-    max_page = 100
+    max_page = 200
 
     def __check_vals(self):
         if not all([
