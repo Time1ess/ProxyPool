@@ -3,11 +3,9 @@
 # Author: David
 # Email: youchen.du@gmail.com
 # Created: 2017-04-19 14:00
-# Last modified: 2017-04-26 10:31
+# Last modified: 2017-04-27 09:27
 # Filename: settings.py
 # Description:
-# -*- coding: utf-8 -*-
-
 # Scrapy settings for ProxyCrawl project
 #
 # For simplicity, this file contains only settings considered important or
@@ -16,7 +14,6 @@
 #     http://doc.scrapy.org/en/latest/topics/settings.html
 #     http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 #     http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
-
 BOT_NAME = 'ProxyCrawl'
 
 SPIDER_MODULES = ['ProxyCrawl.spiders']

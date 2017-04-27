@@ -3,7 +3,7 @@
 # Author: David
 # Email: youchen.du@gmail.com
 # Created: 2017-04-19 15:51
-# Last modified: 2017-04-25 21:36
+# Last modified: 2017-04-27 18:40
 # Filename: pipelines.py
 # Description:
 # Define your item pipelines here
@@ -16,11 +16,6 @@ import redis
 from scrapy.exceptions import DropItem
 
 from ProxyCrawl.items import ProxyItem
-
-
-class ProxycrawlPipeline(object):
-    def process_item(self, item, spider):
-        return item
 
 
 class ProxyItemPipeline:
@@ -36,21 +31,17 @@ class ProxyItemPipeline:
         item.setdefault('mode', 'Unknown')
         item.setdefault('protocol', 'http')
         item.setdefault('validation_time', 'Unknown')
-        pipe = self.conn.pipeline(False)
-        if self.conn.sismember('rookie_proxies', item['proxy']) or\
-                self.conn.sismember('available_proxies', item['proxy']):
+        proxy = '{}://{}'.format(item['protocol'], item['proxy'])
+        if self.conn.sismember('rookie_proxies', proxy) or\
+                self.conn.sismember('available_proxies', proxy) or\
+                self.conn.sismember('lost_proxies', proxy) or\
+                self.conn.sismember('dead_proxies', proxy):
             raise DropItem('Already in the waiting list')
         key = 'proxy_info:'+item['proxy']
-        pipe.sadd('rookie_proxies', item['proxy'])
+        pipe = self.conn.pipeline(False)
+        pipe.sadd('rookie_proxies', proxy)
         pipe.zadd('rookies_checking', item['proxy'], time.time())
-        pipe.hset(key, 'proxy', item['proxy'])
-        pipe.hset(key, 'ip', item['ip'])
-        pipe.hset(key, 'port', item['port'])
-        pipe.hset(key, 'addr', item['addr'])
-        pipe.hset(key, 'mode', item['mode'])
-        pipe.hset(key, 'protocol', item['protocol'])
-        pipe.hset(key, 'validation_time', item['validation_time'])
+        pipe.hmset(key, dict(item))
         pipe.hset(key, 'failed_times', 0)
-        pipe.hset(key, 'latency', 1000)
         pipe.execute()
         return item

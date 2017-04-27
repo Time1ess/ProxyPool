@@ -3,13 +3,15 @@
 # Author: David
 # Email: youchen.du@gmail.com
 # Created: 2017-04-25 16:25
-# Last modified: 2017-04-25 21:39
+# Last modified: 2017-04-27 10:34
 # Filename: crawlall.py
 # Description:
-import scrapy
 from scrapy.commands import ScrapyCommand
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
+
+from ProxyCrawl.rules import Rule
+from ProxyCrawl.spiders.proxy_spider import ProxySpider
 
 
 class CrawlAll(ScrapyCommand):
@@ -23,11 +25,18 @@ class CrawlAll(ScrapyCommand):
         return 'Runs all of the spiders'
 
     def run(self, args, opts):
-        settings = get_project_settings()
-        process = CrawlerProcess(settings)
-        for spider in process.spider_loader.list():
-            if spider in self.excludes:
+        process = CrawlerProcess(get_project_settings())
+        try:
+            rules = Rule.loads()
+            if not rules:
+                raise ValueError
+        except ValueError:
+            print('Error in loading Redis rules, fallback to CSV rules')
+            rules = Rule.loads('csv')
+        print(rules)
+        for rule in rules:
+            rule.save()
+            if rule.name in self.excludes:
                 continue
-            spider_cls = process.spider_loader.load(spider)
-            process.crawl(spider_cls)
+            process.crawl(ProxySpider, rule)
         process.start()

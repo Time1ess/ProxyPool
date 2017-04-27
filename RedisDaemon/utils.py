@@ -3,10 +3,10 @@
 # Author: David
 # Email: youchen.du@gmail.com
 # Created: 2017-04-19 18:43
-# Last modified: 2017-04-25 21:51
+# Last modified: 2017-04-27 18:40
 # Filename: utils.py
 # Description:
-import time 
+import time
 
 from urllib import request as Request
 from concurrent.futures import CancelledError
@@ -16,7 +16,7 @@ def test_proxy_alive(proxy, protocol, url='http://www.baidu.com', timeout=10):
     request = Request.Request(url)
     request.set_proxy(proxy, protocol)
     try:
-        response = Request.urlopen(request, timeout=timeout)
+        Request.urlopen(request, timeout=timeout)
     except Exception as e:
         return (proxy, protocol, False)
     return (proxy, protocol, True)
@@ -24,47 +24,58 @@ def test_proxy_alive(proxy, protocol, url='http://www.baidu.com', timeout=10):
 
 def rookie_callback(conn, futures):
     def _wrapper(future):
+        futures.remove(future)
         try:
             proxy, protocol, succeed = future.result()
         except CancelledError:
             return
         key = 'proxy_info:' + proxy
-        conn.zrem('rookies_checking', proxy)
         if succeed:
-            conn.hset(key, 'failed_times', 0)
+            pipe = conn.pipeline(False)
+            pipe.zrem('rookies_checking', proxy)
+            pipe.hset(key, 'failed_times', 0)
             # Move proxy from rookies to availables
-            conn.sadd('available_proxies', '{}://{}'.format(protocol, proxy))
-            conn.srem('rookie_proxies', proxy)
-            conn.zadd('availables_checking', proxy, time.time())
+            pipe.smove('rookie_proxies', 'available_proxies',
+                       '{}://{}'.format(protocol, proxy))
+            pipe.zadd('availables_checking', proxy, time.time() + 30)
+            pipe.execute()
         else:
             if conn.hincrby(key, 'failed_times', 1) < 3:
                 # If not reach the maximum of failed_times
                 # Since it is not important so re-check it after 10 seconds
                 conn.zadd('rookies_checking', proxy, time.time() + 10)
             else:
-                conn.srem('rookie_proxies', proxy)
-                conn.delete(key)
-        futures.remove(future)
+                pipe = conn.pipeline(False)
+                pipe.zrem('rookies_checking', proxy)
+                pipe.smove('rookie_proxies', 'dead_proxies',
+                           '{}://{}'.format(protocol, proxy))
+                pipe.execute()
     return _wrapper
 
 
 def available_callback(conn, futures):
     def _wrapper(future):
+        futures.remove(future)
         try:
             proxy, protocol, succeed = future.result()
         except CancelledError:
             return
         key = 'proxy_info:' + proxy
-        conn.zrem('availables_checking', proxy)
+        pipe = conn.pipeline(False)
         if succeed:
-            conn.hset(key, 'failed_times', 0)
-            conn.zadd('availables_checking', proxy, time.time() + 30)
+            pipe.hset(key, 'failed_times', 0)
+            pipe.zadd('availables_checking', proxy, time.time() + 30)
+            pipe.smove('lost_proxies', 'available_proxies',
+                       '{}://{}'.format(protocol, proxy))
         else:
             if conn.hincrby(key, 'failed_times', 1) < 3:
-                conn.zadd('rookies_checking', proxy, time.time())
+                pipe.zadd('availables_checking', proxy, time.time() + 10)
+                pipe.smove('available_proxies', 'lost_proxies',
+                           '{}://{}'.format(protocol, proxy))
             else:
-                conn.srem('available_proxies', '{}://{}'.format(protocol,
-                                                                proxy))
-                conn.delete(key)
-        futures.remove(future)
+                pipe.zrem('availables_checking', proxy)
+                pipe.smove('lost_proxies', 'dead_proxies',
+                           '{}://{}'.format(protocol, proxy))
+                pipe.delete(key)
+        pipe.execute()
     return _wrapper
