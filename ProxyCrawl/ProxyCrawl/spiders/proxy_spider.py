@@ -3,7 +3,7 @@
 # Author: David
 # Email: youchen.du@gmail.com
 # Created: 2017-04-19 20:23
-# Last modified: 2017-04-29 09:43
+# Last modified: 2017-04-29 15:08
 # Filename: proxy_spider.py
 # Description:
 import scrapy
@@ -20,8 +20,11 @@ class ProxySpider(scrapy.Spider):
         self.start_urls = [self.rule.url_fmt.format(self.current)]
 
     def parse(self, response):
-        self.current += 1
-        yield Request(self.rule.url_fmt.format(self.current))
+        for i in range(10):
+            self.current += 1
+            if self.current >= self.rule.max_page:
+                break
+            yield Request(self.rule.url_fmt.format(self.current))
         if response.status != 200:
             return None
         ip_list = response.xpath(self.rule.row_xpath)[1:]

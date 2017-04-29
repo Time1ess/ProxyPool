@@ -3,7 +3,7 @@
 # Author: David
 # Email: youchen.du@gmail.com
 # Created: 2017-04-27 10:27
-# Last modified: 2017-04-29 14:45
+# Last modified: 2017-04-29 15:08
 # Filename: main.py
 # Description:
 import json
@@ -102,10 +102,10 @@ def api_rules(method):
     rule_dict = dict(request.form)
     for key in rule_dict:
         rule_dict[key] = rule_dict[key][0]
-    rule_dict['status'] = 'stopped'
     rule_name = rule_dict['name']
     key = 'Rule:' + rule_name
     if method == 'add_submit':
+        rule_dict['status'] = 'stopped'
         conn.hmset(key, rule_dict)
         conn.sadd('Rules', rule_name)
         cmd = 'start|' + rule_name

@@ -3,21 +3,18 @@
 # Author: David
 # Email: youchen.du@gmail.com
 # Created: 2017-04-25 16:25
-# Last modified: 2017-04-29 14:45
+# Last modified: 2017-04-29 15:08
 # Filename: crawlall.py
 # Description:
-import os
-
 import redis
 
-from twisted.internet import reactor, task, defer
+from twisted.internet import reactor, task
 from scrapy.commands import ScrapyCommand
 from scrapy.crawler import CrawlerRunner
 from scrapy.utils.project import get_project_settings
 
 from ProxyCrawl.rules import Rule
 from ProxyCrawl.spiders.proxy_spider import ProxySpider
-from ProxyCrawl.settings import PROJECT_ROOT
 
 
 class RuleMaintainer:
@@ -41,14 +38,18 @@ class RuleMaintainer:
         if rule_maps.get(rule_name, None):
             d = rule_maps[rule_name].stop()  # Shutdown gracefully
             self.conn.hset('Rule:' + rule_name, 'status', 'waiting')
+
             def _callback(*args, **kwargs):
                 self.conn.hset('Rule:' + rule_name, 'status', 'stopped')
             d.addBoth(_callback)
+        else:
+            if self.conn.hget('Rule:' + rule_name, 'status'):
+                self.conn.hset('Rule:' + rule_name, 'status', 'stopped')
 
     def _start_or_unpause_crawler(self, rule_maps, rule_name):
         if rule_maps.get(rule_name, None):
             if self.conn.hget('Rule:' + rule_name, 'status') != 'waiting' and\
-                    rule_maps[rule_name].engine.paused == True:
+                    rule_maps[rule_name].engine.paused is True:
                 rule_maps[rule_name].engine.unpause()
                 self.conn.hset('Rule:' + rule_name, 'status', 'started')
         else:
@@ -63,7 +64,7 @@ class RuleMaintainer:
                 self.conn.hset('Rule:' + rule_name, 'status', 'paused')
 
     def _reload_crawler(self, rule_maps, rule_name):
-        if rule_maps.get(rule_name, None):
+        if not rule_maps.get(rule_name, None):
             return
         if self.conn.hget('Rule:' + rule_name, 'status') == 'waiting':
             return
@@ -89,6 +90,7 @@ class RuleMaintainer:
                 self._start_or_unpause_crawler(rule_maps, rule_name)
             elif action == 'reload':
                 self._reload_crawler(rule_maps, rule_name)
+
 
 class CrawlAll(ScrapyCommand):
     requires_project = True
