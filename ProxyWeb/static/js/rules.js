@@ -21,9 +21,9 @@ $(document).ready(function(){
             url:'/api/crawlers/'+crawler_method+'/'+rule_name,
             type:'GET',
         })
-            .done(function(){
-                window.location.reload();
-            });
+        .done(function(){
+            setTimeout('window.location.reload()', 2000);
+        });
     });
     $('.rules').click(function(){
         var rule_method = $(this).attr('rule-method');
@@ -34,17 +34,17 @@ $(document).ready(function(){
                 url:'/api/rules/delete/'+rule_name,
                 type:'GET',
             })
-                .done(function(data){
-                    if(data == 'Not finished')
-                        alert('删除规则前请先停止对应爬虫');
-                    else if(data == 'Timeout')
-                        alert('删除超时，请重试');
-                    else if(data == 'Succeed')
-                        alert('删除成功');
-                    else
-                        alert('未知错误');
-                    window.location.reload();
-                });
+            .done(function(data){
+                if(data == 'Not finished')
+                    alert('删除规则前请先停止对应爬虫');
+                else if(data == 'Timeout')
+                    alert('删除超时，请重试');
+                else if(data == 'Succeed')
+                    alert('删除成功');
+                else
+                    alert('未知错误');
+                window.location.reload();
+            });
         }
         else if(rule_method == 'update')
         {
@@ -53,10 +53,10 @@ $(document).ready(function(){
                 url:'/rules/'+rule_name,
                 type:'GET',
             })
-                .done(function(data){
-                    $('#rule_modal').html(data);
-                    $('#rule_modal').modal('show');
-                });
+            .done(function(data){
+                $('#rule_modal').html(data);
+                $('#rule_modal').modal('show');
+            });
         }
         else if(rule_method == 'add')
         {
@@ -64,10 +64,10 @@ $(document).ready(function(){
                 url:'/rules/',
                 type:'GET',
             })
-                .done(function(data){
-                    $('#rule_modal').html(data);
-                    $('#rule_modal').modal('show');
-                });
+            .done(function(data){
+                $('#rule_modal').html(data);
+                $('#rule_modal').modal('show');
+            });
         }
     });
 });

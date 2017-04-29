@@ -1,6 +1,7 @@
 # ProxyPool
 
 ---
+> Currently, This tool is in developing and `README` may be out-dated.
 [阅读中文版本(Read in Chinese)](README_CN.md)
 
 An Python implementation of proxy pool.

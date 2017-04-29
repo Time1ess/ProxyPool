@@ -1,6 +1,7 @@
 # ProxyPool
 
 ---
+> 目前该工具处于开发中，`README`文档可能不能及时更新。
 [Read in English(阅读英文版本)](README.md)
 
 一个采用Python实现的代理池工具。

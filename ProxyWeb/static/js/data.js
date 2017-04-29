@@ -10,13 +10,13 @@ function update_status(series)
         $("#alert-notification").hide();
         $('#available_proxies').html(data.availables);
         $('#rookie_proxies').html(data.rookies);
-        $('#futures').html(data.futures);
+        $('#currents').html(data.currents);
         $('#lost_proxies').html(data.losts);
         $('#dead_proxies').html(data.deads);
 
         series[0].data.push([0, data.availables]);
         series[1].data.push([0, data.rookies]);
-        series[2].data.push([0, data.futures]);
+        series[2].data.push([0, data.currents]);
         //series[3].data.push([0, data.deads]);
         for(var i = 0; i < series.length; i++)
         {
@@ -30,7 +30,7 @@ function update_status(series)
         $("#alert-notification").show();
         $('#available_proxies').html('未知');
         $('#rookie_proxies').html('未知');
-        $('#futures').html('未知');
+        $('#currents').html('未知');
         $('#lost_proxies').html('未知');
         $('#dead_proxies').html('未知');
     });

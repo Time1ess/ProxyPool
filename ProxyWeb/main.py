@@ -3,7 +3,7 @@
 # Author: David
 # Email: youchen.du@gmail.com
 # Created: 2017-04-27 10:27
-# Last modified: 2017-04-29 15:08
+# Last modified: 2017-04-29 20:01
 # Filename: main.py
 # Description:
 import json
@@ -54,9 +54,9 @@ def api_status():
     rookies = conn.scard('rookie_proxies') or 0
     losts = conn.scard('lost_proxies') or 0
     deads = conn.scard('dead_proxies') or 0
-    futures = conn.get('futures') or 0
+    currents = conn.get('currents') or 0
     data = {'availables': availables, 'rookies': rookies, 'losts': losts,
-            'deads': deads, 'futures': futures}
+            'deads': deads, 'currents': currents}
     return json.dumps(data)
 
 @app.route('/api/crawlers/<method>/<rule_name>')
