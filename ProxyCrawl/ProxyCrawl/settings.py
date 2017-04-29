@@ -3,7 +3,7 @@
 # Author: David
 # Email: youchen.du@gmail.com
 # Created: 2017-04-19 14:00
-# Last modified: 2017-04-27 09:27
+# Last modified: 2017-04-29 09:21
 # Filename: settings.py
 # Description:
 # Scrapy settings for ProxyCrawl project
@@ -14,11 +14,18 @@
 #     http://doc.scrapy.org/en/latest/topics/settings.html
 #     http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 #     http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
+import os
+
+
 BOT_NAME = 'ProxyCrawl'
 
 SPIDER_MODULES = ['ProxyCrawl.spiders']
 NEWSPIDER_MODULE = 'ProxyCrawl.spiders'
 COMMANDS_MODULE = 'ProxyCrawl.commands'
+
+PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
+
+HTTPERROR_ALLOW_ALL = True
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent

@@ -48,7 +48,7 @@
                                 <a href="/"><i class="fa fa-dashboard fa-fw"></i>总览</a>
                             </li>
                             <li>
-                                <a href="/"><i class="fa fa-dashboard fa-fw"></i>规则管理</a>
+                                <a href="/rules"><i class="fa fa-dashboard fa-fw"></i>规则管理</a>
                             </li>
                             {#
                             <li>
@@ -148,6 +148,9 @@
         </div>
         <!-- /#wrapper -->
         {% include 'footer.html' %}
+
+        {% block more_js %}
+        {% endblock %}
     </body>
 
 </html>

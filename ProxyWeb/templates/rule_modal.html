@@ -1,0 +1,63 @@
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title" id="rule_modal_title">{{modal_type}}</h4>
+        </div>
+        <div class="modal-body" id="rule_modal_body">
+            <form id="rule_form">
+                <div class="form-group input-group">
+                    <span class="input-group-addon">规则名</span>
+                    <input type="text" class="form-control" placeholder="全局唯一命名" name="name" value="{{name}}">
+                </div>
+                <div class="form-group input-group">
+                    <span class="input-group-addon">URL格式</span>
+                    <input type="text" class="form-control" placeholder="使用{}代替页面号,例如:http://www.66ip.cn/{}.html" name="url_fmt" value="{{url_fmt}}">
+                </div>
+                <div class="form-group input-group">
+                    <span class="input-group-addon">行模式</span>
+                    <input type="text" class="form-control" placeholder='所有模式均采用xpath表示, 例如://div[@id="main"]//tr' name="row_xpath" value="{{row_xpath}}">
+                </div>
+                <div class="form-group input-group">
+                    <span class="input-group-addon">代理ip模式</span>
+                    <input type="text" class="form-control" placeholder="例如:td[1]/text(), 可使用null表示跳过匹配" name="host_xpath" value="{{host_xpath}}">
+                </div>
+                <div class="form-group input-group">
+                    <span class="input-group-addon">代理端口模式</span>
+                    <input type="text" class="form-control" name="port_xpath" value="{{port_xpath}}">
+                </div>
+                <div class="form-group input-group">
+                    <span class="input-group-addon">代理地址模式</span>
+                    <input type="text" class="form-control" name="addr_xpath" value="{{addr_xpath}}">
+                </div>
+                <div class="form-group input-group">
+                    <span class="input-group-addon">代理类型模式</span>
+                    <input type="text" class="form-control" name="mode_xpath" value="{{mode_xpath}}">
+                </div>
+                <div class="form-group input-group">
+                    <span class="input-group-addon">代理协议模式</span>
+                    <input type="text" class="form-control" name="proto_xpath" value="{{proto_xpath}}">
+                </div>
+                <div class="form-group input-group">
+                    <span class="input-group-addon">验证时间模式</span>
+                    <input type="text" class="form-control" name="vt_xpath" value="{{vt_xpath}}">
+                </div>
+                <div class="form-group input-group">
+                    <span class="input-group-addon">最大页面数量</span>
+                    <input type="text" class="form-control" name="max_page" value="{{max_page}}">
+                </div>
+
+            </form>
+        </div>
+        <div class="modal-footer" id="rule_modal_footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+            {% if modal_type == 'update_submit' %}
+            <button type="button" class="btn btn-info" onclick="submit_form('update_submit')">更新</button>
+            {% else %}
+            <button type="button" class="btn btn-success" onclick="submit_form('add_submit')">添加</button>
+            {% endif %}
+        </div>
+    </div>
+    <!-- /.modal-content -->
+</div>
+<!-- /.modal-dialog -->

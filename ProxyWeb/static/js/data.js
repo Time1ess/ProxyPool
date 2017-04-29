@@ -1,6 +1,6 @@
-var container = $("#flot-line-chart-moving");
 function update_status(series)
 {
+    var container = $("#flot-line-chart-moving");
     $.ajax({
         url:'/api/status',
         type:'GET',

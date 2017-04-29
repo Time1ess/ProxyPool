@@ -3,8 +3,8 @@
 # Author: David
 # Email: youchen.du@gmail.com
 # Created: 2017-04-19 20:23
-# Last modified: 2017-04-27 09:57
-# Filename: ProxySpider.py
+# Last modified: 2017-04-29 09:43
+# Filename: proxy_spider.py
 # Description:
 import scrapy
 
@@ -16,10 +16,12 @@ from ProxyCrawl.loaders import ProxyItemLoader
 class ProxySpider(scrapy.Spider):
     def __init__(self, rule, *args, **kwargs):
         self.rule = rule
-        self.start_urls = [self.rule.url_fmt.format(k)
-            for k in range(1, self.rule.max_page)]
+        self.current = 1
+        self.start_urls = [self.rule.url_fmt.format(self.current)]
 
     def parse(self, response):
+        self.current += 1
+        yield Request(self.rule.url_fmt.format(self.current))
         if response.status != 200:
             return None
         ip_list = response.xpath(self.rule.row_xpath)[1:]

@@ -3,12 +3,15 @@
 # Author: David
 # Email: youchen.du@gmail.com
 # Created: 2017-04-26 11:14
-# Last modified: 2017-04-27 10:33
+# Last modified: 2017-04-29 11:15
 # Filename: rules.py
 # Description:
+import os
+
 import redis
 
 from scrapy.utils.conf import init_env
+from ProxyCrawl.settings import PROJECT_ROOT
 
 
 conn = redis.Redis(decode_responses=True)
@@ -81,7 +84,7 @@ class Rule:
     @staticmethod
     def _load_csv_rule(name=None):
         data = []
-        with open('ProxyCrawl/rules.csv', 'rb') as f:
+        with open(os.path.join(PROJECT_ROOT, 'rules.csv'), 'rb') as f:
             for line in f:
                 data.append(tuple(line.decode('utf-8').strip('\n').split(' ')))
         rule_dicts = []
@@ -108,6 +111,30 @@ class Rule:
             rule[key] = int(rule[key])
         return rule
 
+    @staticmethod
+    def _default_status(rule):
+        """
+        Add default status for rule.
+
+        Author: David
+        """
+        if not rule.get('status', False):
+            rule['status'] = 'stopped'
+        return rule
+
+
+    @classmethod
+    def _clean_rule(cls, rule, *args, **kwargs):
+        """
+        Clean rule.
+
+        Author: David
+        """
+        rule = cls._decode_rule(rule, *args, **kwargs)
+        rule = cls._default_status(rule)
+        return rule
+
+
     @classmethod
     def load(cls, name, src='redis'):
         """
@@ -117,7 +144,7 @@ class Rule:
         """
         load_method = getattr(cls, '_load_{}_rule'.format(src))
         rule_dict = load_method(name)
-        rule_dict = cls._decode_rule(rule_dict)
+        rule_dict = cls._clean_rule(rule_dict)
         return cls(rule_dict)
 
     @classmethod
@@ -129,17 +156,15 @@ class Rule:
         """
         load_method = getattr(cls, '_load_{}_rule'.format(src))
         rule_dicts = load_method()
-        rule_dicts = [cls._decode_rule(rule) for rule in rule_dicts]
+        rule_dicts = [cls._clean_rule(rule) for rule in rule_dicts]
         insts = [cls(rule_dict) for rule_dict in rule_dicts]
         return insts
 
     @staticmethod
     def _save_redis_rule(rule_dict):
         key = 'Rule:' + rule_dict['name']
-        pipe = conn.pipeline(False)
-        pipe.hmset(key, rule_dict)
-        pipe.sadd('Rules', rule_dict['name'])
-        pipe.execute()
+        conn.hmset(key, rule_dict)
+        conn.sadd('Rules', rule_dict['name'])
 
     @staticmethod
     def _save_csv_rule(rule_dict):
@@ -158,6 +183,7 @@ class Rule:
 
 if __name__ == '__main__':
     # rule = Rule.load('xici')
+    init_env('default')
     rules = Rule.loads('csv')
     for r in rules:
         r.save()
