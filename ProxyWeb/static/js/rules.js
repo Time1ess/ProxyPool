@@ -9,7 +9,7 @@ function submit_form(rule_method)
         if(data == 'fail')
             alert('请检查表单');
         else
-            setTimeout('window.location.reload()', 2000);
+            setTimeout('window.location.reload()', 1000);
     });
     $('#rule_modal').modal('hide');
 }
@@ -22,7 +22,7 @@ $(document).ready(function(){
             type:'GET',
         })
         .done(function(){
-            setTimeout('window.location.reload()', 2000);
+            setTimeout('window.location.reload()', 1000);
         });
     });
     $('.rules').click(function(){

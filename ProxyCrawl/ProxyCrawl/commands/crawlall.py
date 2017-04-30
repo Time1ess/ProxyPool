@@ -3,7 +3,7 @@
 # Author: David
 # Email: youchen.du@gmail.com
 # Created: 2017-04-25 16:25
-# Last modified: 2017-04-30 10:53
+# Last modified: 2017-04-30 14:23
 # Filename: crawlall.py
 # Description:
 import redis

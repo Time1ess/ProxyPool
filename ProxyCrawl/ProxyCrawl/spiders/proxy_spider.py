@@ -3,7 +3,7 @@
 # Author: David
 # Email: youchen.du@gmail.com
 # Created: 2017-04-19 20:23
-# Last modified: 2017-04-29 15:08
+# Last modified: 2017-04-30 14:25
 # Filename: proxy_spider.py
 # Description:
 import scrapy
@@ -38,4 +38,5 @@ class ProxySpider(scrapy.Spider):
             l.add_xpath('mode', self.rule.mode_xpath)
             l.add_xpath('protocol', self.rule.proto_xpath)
             l.add_xpath('validation_time', self.rule.vt_xpath)
+            l.add_value('src_rule', self.rule.name)
             yield l.load_item()

@@ -3,7 +3,7 @@
 # Author: David
 # Email: youchen.du@gmail.com
 # Created: 2017-04-19 15:12
-# Last modified: 2017-04-25 21:39
+# Last modified: 2017-04-30 14:25
 # Filename: items.py
 # Description:
 # -*- coding: utf-8 -*-
@@ -26,3 +26,4 @@ class ProxyItem(scrapy.Item):
     mode = scrapy.Field()
     protocol = scrapy.Field()
     validation_time = scrapy.Field()
+    src_rule = scrapy.Field()

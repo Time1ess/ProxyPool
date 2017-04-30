@@ -3,7 +3,7 @@
 # Author: David
 # Email: youchen.du@gmail.com
 # Created: 2017-04-29 15:10
-# Last modified: 2017-04-30 11:05
+# Last modified: 2017-04-30 14:23
 # Filename: maintainers.py
 # Description:
 import time
@@ -35,7 +35,7 @@ class RuleMaintainer:
 
     def _stop_crawler(self, rule_maps, rule_name):
         if rule_maps.get(rule_name, None):
-            d = rule_maps[rule_name].stop()  # Shutdown gracefully
+            d = rule_maps[rule_name].engine.stop()  # Shutdown gracefully
             self.conn.hset('Rule:' + rule_name, 'status', 'waiting')
 
             def _callback(*args, **kwargs):
@@ -190,7 +190,6 @@ class ScheduleMaintainer:
         self.conn = conn
 
     def __call__(self):
-        schedule_cnts = 0
         schedule_pipe = self.conn.pipeline(False)
         for key in ['rookie_proxies', 'available_proxies', 'lost_proxies']:
             proxies = [p[p.rfind('/')+1:] for p in\
@@ -205,12 +204,10 @@ class ScheduleMaintainer:
             for idx, rank in enumerate(ranks):
                 if rank:
                     continue
-                schedule_cnts += 1
                 if key == 'rookie_proxies':
                     schedule_pipe.zadd('rookies_checking', proxies[idx],
                                        time.time() + 10)
                 else:
                     schedule_pipe.zadd('availables_checking', proxies[idx],
                                        time.time() + 3)
-        schedule_pipe.set('schedules', schedule_cnts)
         schedule_pipe.execute()
