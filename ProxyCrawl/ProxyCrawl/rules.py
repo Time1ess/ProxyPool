@@ -3,7 +3,7 @@
 # Author: David
 # Email: youchen.du@gmail.com
 # Created: 2017-04-26 11:14
-# Last modified: 2017-04-29 11:15
+# Last modified: 2017-04-30 15:55
 # Filename: rules.py
 # Description:
 import os
@@ -34,6 +34,7 @@ class Rule:
         proto_xpath:
         vt_xpath: validation_time
         max_page: 200
+        status:
 
     Author: David
     """
