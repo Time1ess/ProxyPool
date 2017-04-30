@@ -3,7 +3,7 @@
 # Author: David
 # Email: youchen.du@gmail.com
 # Created: 2017-04-29 15:10
-# Last modified: 2017-04-29 19:59
+# Last modified: 2017-04-30 11:05
 # Filename: maintainers.py
 # Description:
 import time
@@ -175,3 +175,42 @@ class ProxyMaintainer:
                 ip, port, protocol = ret
                 self._test_proxy_alive(ip, port, protocol, check_key)
         self.conn.set('currents', self.currents)
+
+
+class ScheduleMaintainer:
+    """
+    A maintainer to schedule proxies checking.
+
+    Schedule proxy which is in rookie_proxies or available_proxies or
+    lost_proxies but has no checking calls with ProxyMaintainer.
+
+    Author: David
+    """
+    def __init__(self, conn):
+        self.conn = conn
+
+    def __call__(self):
+        schedule_cnts = 0
+        schedule_pipe = self.conn.pipeline(False)
+        for key in ['rookie_proxies', 'available_proxies', 'lost_proxies']:
+            proxies = [p[p.rfind('/')+1:] for p in\
+                       iter(self.conn.smembers(key))]
+            pipe = self.conn.pipeline(False)
+            for proxy in proxies:
+                if key == 'rookie_proxies':
+                    pipe.zrank('rookies_checking', proxy)
+                else:
+                    pipe.zrank('availables_checking', proxy)
+            ranks = pipe.execute()
+            for idx, rank in enumerate(ranks):
+                if rank:
+                    continue
+                schedule_cnts += 1
+                if key == 'rookie_proxies':
+                    schedule_pipe.zadd('rookies_checking', proxies[idx],
+                                       time.time() + 10)
+                else:
+                    schedule_pipe.zadd('availables_checking', proxies[idx],
+                                       time.time() + 3)
+        schedule_pipe.set('schedules', schedule_cnts)
+        schedule_pipe.execute()

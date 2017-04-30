@@ -3,7 +3,7 @@
 # Author: David
 # Email: youchen.du@gmail.com
 # Created: 2017-04-25 16:25
-# Last modified: 2017-04-29 19:58
+# Last modified: 2017-04-30 10:53
 # Filename: crawlall.py
 # Description:
 import redis
@@ -16,6 +16,7 @@ from scrapy.utils.project import get_project_settings
 from ProxyCrawl.rules import Rule
 from ProxyCrawl.spiders.proxy_spider import ProxySpider
 from ProxyCrawl.maintainers import RuleMaintainer, ProxyMaintainer
+from ProxyCrawl.maintainers import ScheduleMaintainer
 
 
 class CrawlAll(ScrapyCommand):
@@ -46,8 +47,11 @@ class CrawlAll(ScrapyCommand):
                 runner.crawl(ProxySpider, rule)
         rule_maintainer = RuleMaintainer(conn, runner)
         proxy_maintainer = ProxyMaintainer(conn)
+        schedule_maintainer = ScheduleMaintainer(conn)
         lc = task.LoopingCall(rule_maintainer)
         lc.start(1)
         lc = task.LoopingCall(proxy_maintainer)
-        lc.start(1)
+        lc.start(0.5)
+        lc = task.LoopingCall(schedule_maintainer)
+        lc.start(10)
         reactor.run()
