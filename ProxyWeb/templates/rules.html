@@ -29,7 +29,7 @@
                         </thead>
                         <tbody>
                             {% for rule in rules %}
-                            <tr class="even{% if rule['status'] == 'stopped' %}{% elif rule['status'] == 'paused' %} warning{% elif rule['status'] == 'started' %} success{% endif %}" rule-name="{{rule['name']}}">
+                            <tr class="even{% if rule['status'] == 'stopped' %}{% elif rule['status'] == 'paused' %} warning{% elif rule['status'] == 'started' %} success{% elif rule['status'] == 'finished' %} info{% endif %}" rule-name="{{rule['name']}}">
                                 <td>{{rule['name']}}</td>
                                 <td>{{rule['url_fmt']}}</td>
                                 <td>{{rule['row_xpath']}}</td>
@@ -43,6 +43,8 @@
                                     已启用
                                     {% elif rule['status'] == 'paused' %}
                                     已暂停
+                                    {% elif rule['status'] == 'finished' %}
+                                    已结束
                                     {% endif %}
                                 </td>
                                 <td>

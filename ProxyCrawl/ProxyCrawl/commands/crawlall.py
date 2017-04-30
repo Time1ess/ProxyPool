@@ -3,7 +3,7 @@
 # Author: David
 # Email: youchen.du@gmail.com
 # Created: 2017-04-25 16:25
-# Last modified: 2017-04-30 14:23
+# Last modified: 2017-04-30 15:27
 # Filename: crawlall.py
 # Description:
 import redis
@@ -44,7 +44,10 @@ class CrawlAll(ScrapyCommand):
             if rule.name in self.excludes:
                 continue
             if conn.hget('Rule:' + rule.name, 'status') == 'started':
-                runner.crawl(ProxySpider, rule)
+                d = runner.crawl(ProxySpider, rule)
+                # Set status to stopped if crawler finished
+                d.addBoth(lambda _: conn.hset(
+                    'Rule:' + rule.name, 'status', 'finished'))
         rule_maintainer = RuleMaintainer(conn, runner)
         proxy_maintainer = ProxyMaintainer(conn)
         schedule_maintainer = ScheduleMaintainer(conn)

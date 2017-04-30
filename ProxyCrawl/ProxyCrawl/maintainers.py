@@ -3,7 +3,7 @@
 # Author: David
 # Email: youchen.du@gmail.com
 # Created: 2017-04-29 15:10
-# Last modified: 2017-04-30 14:23
+# Last modified: 2017-04-30 15:27
 # Filename: maintainers.py
 # Description:
 import time
@@ -36,13 +36,14 @@ class RuleMaintainer:
     def _stop_crawler(self, rule_maps, rule_name):
         if rule_maps.get(rule_name, None):
             d = rule_maps[rule_name].engine.stop()  # Shutdown gracefully
+            self.runner.crawlers.discard(rule_maps[rule_name])
             self.conn.hset('Rule:' + rule_name, 'status', 'waiting')
 
             def _callback(*args, **kwargs):
                 self.conn.hset('Rule:' + rule_name, 'status', 'stopped')
             d.addBoth(_callback)
         else:
-            if self.conn.hget('Rule:' + rule_name, 'status'):
+            if self.conn.hget('Rule:' + rule_name, 'status') != 'waiting':
                 self.conn.hset('Rule:' + rule_name, 'status', 'stopped')
 
     def _start_or_unpause_crawler(self, rule_maps, rule_name):
@@ -53,7 +54,10 @@ class RuleMaintainer:
                 self.conn.hset('Rule:' + rule_name, 'status', 'started')
         else:
             rule = Rule.load(rule_name)
-            self.runner.crawl(ProxySpider, rule)
+            d = self.runner.crawl(ProxySpider, rule)
+            # Set status to stopped if crawler finished
+            d.addBoth(lambda _: self.conn.hset(
+                'Rule:' + rule_name, 'status', 'finished'))
             self.conn.hset('Rule:' + rule_name, 'status', 'started')
 
     def _pause_crawler(self, rule_maps, rule_name):
@@ -155,7 +159,7 @@ class ProxyMaintainer:
                 pipe.execute()
 
         d.addCallbacks(_callback, _errback)
-        delayed_call = reactor.callLater(timeout, d.cancel)
+        reactor.callLater(timeout, d.cancel)
 
         def _clean(ignored):
             self.currents -= 1
@@ -192,7 +196,7 @@ class ScheduleMaintainer:
     def __call__(self):
         schedule_pipe = self.conn.pipeline(False)
         for key in ['rookie_proxies', 'available_proxies', 'lost_proxies']:
-            proxies = [p[p.rfind('/')+1:] for p in\
+            proxies = [p[p.rfind('/')+1:] for p in
                        iter(self.conn.smembers(key))]
             pipe = self.conn.pipeline(False)
             for proxy in proxies:
