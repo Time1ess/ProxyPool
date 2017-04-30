@@ -45,6 +45,10 @@ To start the tool, simply:
 
 It will start *Crawling service*、*Pool maintain service*、*Maintain schedule service*、*Rule Maintain service* and *Web console*
 
+To monitor the tool, go to:
+
+[Web console](http://localhost:5000)
+
 To stop the tool, simply:
 > $ sudo ./stop.sh
 
