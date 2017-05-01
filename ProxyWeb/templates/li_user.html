@@ -1,17 +1,30 @@
 <li class="dropdown">
+    {% if request.cookies.get('lang', 'english') == 'english' %}
     <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+        语言
         <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
     </a>
     <ul class="dropdown-menu dropdown-user">
-        <li><a href="#"><i class="fa fa-user fa-fw"></i> User Profile</a>
+
+        <li><a href="/lang/english"><i class="fa fa-gear fa-fw"></i>English</a>
         </li>
-        <li><a href="#"><i class="fa fa-gear fa-fw"></i> Settings</a>
-        </li>
-        <li class="divider"></li>
-        <li><a href="login.html"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+        <li><a href="/lang/chinese"><i class="fa fa-gear fa-fw"></i>简体中文</a>
         </li>
     </ul>
-    <!-- /.dropdown-user -->
+    {% else %}
+    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+        Language
+        <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
+    </a>
+    <ul class="dropdown-menu dropdown-user">
+
+        <li><a href="/lang/english"><i class="fa fa-gear fa-fw"></i>English</a>
+        </li>
+        <li><a href="/lang/chinese"><i class="fa fa-gear fa-fw"></i>简体中文</a>
+        </li>
+    </ul>
+    {% endif %}
+<!-- /.dropdown-user -->
 </li>
 <!-- /.dropdown -->
 

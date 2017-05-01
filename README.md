@@ -131,9 +131,9 @@ FIFO queue, format:`cmd|rule_name`, tell *Rule maintain service* how to deal wit
 
 1. Crawling pages
 2. Extract `ProxyItem` from content
-3. Store `ProxyItem` in Redis
+3. Use pipeline to store `ProxyItem` in Redis
 
-### Maintaining proxy pool
+### Proxy maintain
 
 **New proxies**:
 
@@ -153,6 +153,36 @@ FIFO queue, format:`cmd|rule_name`, tell *Rule maintain service* how to deal wit
 			* wait for next test
 		* Maximum retry times reached
 			* Delete proxy
+
+### Rule maintain
+* Listen FIFO queue `Jobs` in redis
+	* Fetch action_type and rule_name
+		* pause
+			* Pause the engine of the crawler which has the rule of rule_name and set rule status to `paused`
+		* stop
+			* Any working crawlers are using the specific rule
+				* Stop the engine gracefully
+				* Set rule status to `waiting`
+				* Add callback to set status to `stopped` when engine stopped
+			* No such rule is used
+				* Set rule status to `stopped` immediately
+		* start
+			* Any working crawlers are using the specific rule and status is not `waiting` and engine is paused
+				*  Unpause the engine and set rule status to `started`
+			* No such rule is used
+				* Load rule info from redis and instantiate a new rule object
+				* Instantiate a new crawler with the rule
+				* Add callback to set status to `finished` when crawler finished
+				* Set rule status to `started`
+		* reload
+			* Any working crawlers are using the specific rule and status is not `waiting`
+				* Re-assign rule to the crawler
+
+### Schedule proxies checking
+* Iterate over proxies in different status(**rookie**, **available**, **lost**)
+	* Fetch `zrank` from redis
+		* if `zrank` is `None` which means no checking schedule for the proxy
+			* Add a new checking schedule
 
 ## Retrieve a available proxy for others
 
@@ -176,3 +206,6 @@ class RandomProxyMiddleware:
                     break
             request.meta['proxy'] = proxy
 ```
+
+json(default port:5000):
+[http://localhost:5000/api/proxy](http://localhost:5000/api/proxy)

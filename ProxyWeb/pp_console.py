@@ -3,7 +3,7 @@
 # Author: David
 # Email: youchen.du@gmail.com
 # Created: 2017-04-27 10:27
-# Last modified: 2017-04-30 16:09
+# Last modified: 2017-05-01 11:40
 # Filename: pp_console.py
 # Description:
 import json
@@ -11,8 +11,8 @@ import time
 
 import redis
 
-from flask import Flask
-from flask import render_template, request
+from flask import Flask, make_response
+from flask import render_template, request, redirect, url_for
 
 
 app = Flask('ProxyWeb')
@@ -21,7 +21,18 @@ conn = redis.Redis(decode_responses=True)
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    resp = make_response(render_template('index.html'))
+    if not request.cookies.get('lang', None):
+        resp.set_cookie('lang', 'english')
+    return resp
+
+@app.route('/lang/<lang>')
+def set_language(lang):
+    resp = redirect(url_for('index'))
+    if lang not in ['chinese', 'english']:
+        return resp
+    resp.set_cookie('lang', lang)
+    return resp
 
 
 @app.route('/rules')
@@ -114,6 +125,16 @@ def api_rules(method):
         cmd = 'reload|' + rule_name
     conn.rpush('Jobs', cmd)
     return '0'
+
+
+@app.route('/api/proxy')
+def api_fetch_proxy():
+    item = conn.srandmember('available_proxies')
+    p_idx = item.find(':')
+    protocol = item[:p_idx]
+    ip, port = item[p_idx+3:].split(':')
+    data = {'ip': ip, 'port': int(port), 'protocol': protocol, 'proxy': item}
+    return json.dumps(data)
 
 
 if __name__ == '__main__':
