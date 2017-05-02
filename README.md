@@ -9,7 +9,7 @@ An Python implementation of proxy pool.
 
 `ProxyPool` is a tool to create a proxy pool with [Scrapy](https://scrapy.org) and [Redis](http://redis.io), it will automatically add new available proxies to pool and maintain the pool to delete unusable proxies.
 
-This tool currently only get available proxies from 4 sources, I would add more sources in the future.
+This tool currently get available proxies from 4 sources, I would add more sources in the future.
 
 ## Compatibility
 
@@ -39,6 +39,8 @@ I have not tested other versions of above packages, but I think it works fine fo
 * Less coding work by adding crawl rule, improve scalability
 
 ## How-to
+
+### This tool requires Redis，please make sure Redis service(port 6379) has started
 
 To start the tool, simply:
 > $ ./start.sh
@@ -74,7 +76,7 @@ To add support for crawling more sites for proxies, this tool provides a usual c
 
 ## Data in Redis
 
-All proxy information are stored in Redis, the configuration of Redis is not necessary to this tool.
+All proxy information are stored in Redis.
 
 ### Rule(hset)
 
@@ -187,6 +189,7 @@ FIFO queue, format:`cmd|rule_name`, tell *Rule maintain service* how to deal wit
 ## Retrieve a available proxy for others
 
 To retrieve currently available proxy, Just get one from `available_proxies` with any Redis client.
+
 An scrapy middleware example:
 
 ```Python
@@ -207,5 +210,6 @@ class RandomProxyMiddleware:
             request.meta['proxy'] = proxy
 ```
 
-json(default port:5000):
+json API(default port:5000):
+
 [http://localhost:5000/api/proxy](http://localhost:5000/api/proxy)

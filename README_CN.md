@@ -8,7 +8,7 @@
 
 `ProxyPool`是一个基于[Scrapy](https://scrapy.org)和[Redis](http://redis.io)的自有代理池创建工具，该工具将会自动将可用代理添加至代理池及维护并删除代理池中不可用代理。
 
-该工具目前只从四个数据来源获取代理IP，未来我将会添加更多数据来源。
+该工具目前从四个数据来源获取代理IP，未来我将会添加更多数据来源。
 
 ## 兼容性
 
@@ -38,6 +38,8 @@ Python第三方模块依赖:
 * 通过指定爬取规则减少编写代码工作，提高可扩展性
 
 ## 操作流程
+
+### 本工具需要使用到Redis，请确保已经打开了Redis(端口 6379)
 
 要启动该工具，请于命令行输入:
 > $ ./start.sh
@@ -206,4 +208,5 @@ class RandomProxyMiddleware:
 ```
 
 json接口(默认端口:5000):
+
 [http://localhost:5000/api/proxy](http://localhost:5000/api/proxy)
